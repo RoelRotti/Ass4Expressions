@@ -1,7 +1,9 @@
-/* prefixExp.h, Gerard Renardel, 29 January 2014 */
+/* prefixExp.h, Gerard Renardel, 29 January 2014 
+ * edited, Mathijs van Maurik, to infixExp.h 
+ */
 
-#ifndef PREFIXEXP_H
-#define PREFIXEXP_H
+#ifndef INFIXEXP_H
+#define INFIXEXP_H
 
 /* Here the definition of the type tree of binary trees with nodes containing tokens.
  */
@@ -20,6 +22,6 @@ int valueIdentifier(List *lp, char **sp);
 int isNumerical(ExpTree tr);
 double valueExpTree(ExpTree tr);
 void printExpTreeInfix(ExpTree tr);
-void prefExpTrees();
+void infixExpTrees();
 
 #endif
