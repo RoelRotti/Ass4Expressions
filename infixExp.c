@@ -40,7 +40,7 @@
 #include "scanner.h"
 #include "recognizeExp.h"
 #include "evalExp.h"
-#include "prefixExp.h"
+#include "infixExp.h"
 
 /* The function newExpTreeNode creates a new node for an expression tree.
  */
@@ -137,6 +137,13 @@ int treePrefixExpression(List *lp, ExpTree *tp) {
   return 0;
 }
 
+/* */
+int treeInfixExpression(List *lp, ExpTree *tp){
+
+  return 1;
+}
+
+
 /* The function printExpTreeInfix does what its name suggests.
  */
 
@@ -208,7 +215,7 @@ double valueExpTree(ExpTree tr) {  /* precondition: isNumerical(tr)) */
  * expression, its value is computed and printed.
  */ 
 
-void prefExpTrees() {
+void infixExpTrees() {
   char *ar;
   List tl, tl1;  
   ExpTree t = NULL; 
