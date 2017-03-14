@@ -11,7 +11,7 @@
  * <identifier> ::= <letter> { <letter> | <digit> }
  *
  * Starting pount is the token list obtained from the scanner (in scanner.c). 
- * /
+ */
 
 /* infixExp.c, Mathijs van Maurik & Roel Rotteveel, 14 March 2017
  *
@@ -32,7 +32,7 @@
  * 
  *
  * Starting point is the token list obtained from the scanner (in scanner.c). 
- * /
+ */
 
 #include <stdio.h>  /* printf */
 #include <stdlib.h> /* malloc, free */
