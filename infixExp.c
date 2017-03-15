@@ -321,10 +321,22 @@ double valueExpTree(ExpTree tr) {  /* precondition: isNumerical(tr)) */
 
 /* PART 2 Simplify */
 
-ExpTree simplify(ExpTree tr){
+ExpTree simplify(ExpTree *tp){
+
+  ExpTree simplified = NULL;
+
+  simplified = *tp;
+
+  /* Go through the tree recursively */
+  /* Determine what is going to happen with all the cases in the reader.  */
+  /* Build the new tree using the correct nodes. */
 
 
-  return tr;
+  /* return the correct tree.  */
+
+
+
+  return simplified;
 }
 
 
@@ -337,6 +349,7 @@ void infixExpTrees() {
   char *ar;
   List tl, tl1;  
   ExpTree t = NULL; 
+  /*ExpTree simplified = NULL; */
   printf("give an expression: ");
   ar = readInput();
   while (ar[0] != '!') {
@@ -353,16 +366,21 @@ void infixExpTrees() {
       if ( isNumerical(t) ) {
         printf("the value is %g\n",valueExpTree(t));
       } else {
-
-
-
         printf("this is not a numerical expression\n");
+      /*
+        simplified = simplify(&t);
+        printf("simplified: ");
+        printExpTreeInfix(simplified);
+        printf("\n");*/
+      
       }
     } else {
       printf("this is not an expression\n"); 
     }
+    /*freeExpTree(simplified);*/
     freeExpTree(t);
     t = NULL; 
+    /*simplified = NULL;*/
     freeTokenList(tl);  
     free(ar);
     printf("\ngive an expression: ");
