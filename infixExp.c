@@ -20,7 +20,7 @@
  *
  * <expression>   ::= <term> { ’+’ <term> | ’–’ <term> } 
  *
- * <term>         := <factor> { ’*’ <factor>| ’/’ <factor> } 
+ * <term>         := <factor> { ’*’ <factor> | ’/’ <factor> } 
  *
  * <factor>       := <natnum> | <identifier> | ’(’ <expression> ’)’
  *                
@@ -77,8 +77,34 @@ int isOperator(char c) {
   return ( c == '+' || c == '-' || c == '*' || c == '/');
 }
 
+int isOperatorPlusMinus(char c){
+  return ( c == '+' || c == '-');
+}
+
+int isOperatorMultiplyDivide(char c){
+  return ( c == '*' || c == '/');
+}
+
 int valueOperator(List *lp, char *cp) {
   if (*lp != NULL && (*lp)->tt == Symbol && isOperator(((*lp)->t).symbol) ) {
+    *cp = ((*lp)->t).symbol;
+    *lp = (*lp)->next;
+    return 1;
+  }
+  return 0;
+}
+
+int valueOperatorPlusMinus(List *lp, char *cp) {
+  if (*lp != NULL && (*lp)->tt == Symbol && isOperatorPlusMinus(((*lp)->t).symbol) ) {
+    *cp = ((*lp)->t).symbol;
+    *lp = (*lp)->next;
+    return 1;
+  }
+  return 0;
+}
+
+int valueOperatorMultiplyDivide(List *lp, char *cp) {
+  if (*lp != NULL && (*lp)->tt == Symbol && isOperatorMultiplyDivide(((*lp)->t).symbol) ) {
     *cp = ((*lp)->t).symbol;
     *lp = (*lp)->next;
     return 1;
@@ -129,7 +155,7 @@ int treePrefixExpression(List *lp, ExpTree *tp) {
       t.symbol = c;
       *tp = newExpTreeNode(Symbol, t, tL, tR);
       return 1;
-    } else { /* withuot 'else' the program works fine, but there is a memory leak */
+    } else { /* without 'else' the program works fine, but there is a memory leak */
       freeExpTree(tL);
       return 0;
     }
@@ -137,8 +163,91 @@ int treePrefixExpression(List *lp, ExpTree *tp) {
   return 0;
 }
 
-/* */
+/*
+ * <prefexp>   ::= <number> | <identifier> | '+' <prefexp> <prefexp> 
+ *             | '-' <prefexp> <prefexp> | '*' <prefexp> <prefexp> | '/' <prefexp> <prefexp> 
+ * 
+ * <number>      ::= <digit> { <digit> }
+ *
+ * <identifier> ::= <letter> { <letter> | <digit> } 
+ */
+
+
+/* The function treeInfixExpression tries to build a tree from the tokens in the token list
+ *
+ * <expression>   ::= <term> { ’+’ <term> | ’–’ <term> } 
+ *
+ * <term>         := <factor> { ’*’ <factor> | ’/’ <factor> } 
+ *
+ * <factor>       := <natnum> | <identifier> | ’(’ <expression> ’)’
+ *
+ * The return value indicates whether the action is successful.
+ * Observe that we use mutual recursion.
+
+ */
+int treeInfixFactor(List *lp, ExpTree *tp){
+  double w;
+  char *s;
+  Token t;
+  if ( valueNumber(lp,&w) ) {
+    t.number = (int)w;
+    *tp = newExpTreeNode(Number, t, NULL, NULL);
+    return 1;
+  }
+  if ( valueIdentifier(lp,&s) ) {
+    t.identifier = s;
+    *tp = newExpTreeNode(Identifier, t, NULL, NULL);
+    return 1;
+  }
+
+  if (acceptCharacter(lp,'(') && treeInfixExpression(lp, tp) && acceptCharacter(lp,')')){
+    return 1;
+  }
+
+  return 0;
+}
+
+int treeInfixTerm(List *lp, ExpTree *tp){
+  Token t;
+  ExpTree tL, tR;
+  char c;
+
+  if (! treeInfixFactor(lp, tp)){
+    return 0;
+  }
+  tL = *tp;
+
+  while (valueOperatorMultiplyDivide(lp,&c)){ /* * / */
+    if(! treeInfixFactor(lp, &tR)){
+      return 0;
+    }
+    t.symbol = c;
+    *tp = newExpTreeNode(Symbol, t, tL, tR);
+    tL = *tp;
+  }
+
+  return 1;
+
+}
+
 int treeInfixExpression(List *lp, ExpTree *tp){
+  Token t;
+  ExpTree tL, tR;
+  char c;
+
+  if (! treeInfixTerm(lp, tp)){
+    return 0;
+  }
+  tL = *tp;
+
+  while (valueOperatorPlusMinus(lp,&c)){ /* + - */
+    if(! treeInfixTerm(lp, &tR)){
+      return 0;
+    }
+    t.symbol = c;
+    *tp = newExpTreeNode(Symbol, t, tL, tR);
+    tL = *tp;
+  }
 
   return 1;
 }
@@ -210,6 +319,15 @@ double valueExpTree(ExpTree tr) {  /* precondition: isNumerical(tr)) */
   }
 }
 
+/* PART 2 Simplify */
+
+ExpTree simplify(ExpTree tr){
+
+
+  return tr;
+}
+
+
 /* the function prefExpressionExpTrees performs a dialogue with the user and tries
  * to recognize the input as a prefix expression. When it is a numerical prefix 
  * expression, its value is computed and printed.
@@ -223,10 +341,11 @@ void infixExpTrees() {
   ar = readInput();
   while (ar[0] != '!') {
     tl = tokenList(ar); 
-    printf("the token list is ");
+    /* printf("the token list is "); */
     printList(tl);
+
     tl1 = tl;
-    if ( treePrefixExpression(&tl1,&t) && tl1 == NULL ) { 
+    if ( treeInfixExpression(&tl1,&t) && tl1 == NULL ) { 
          /* there should be no tokens left */
       printf("in infix notation: ");
       printExpTreeInfix(t);
@@ -234,6 +353,9 @@ void infixExpTrees() {
       if ( isNumerical(t) ) {
         printf("the value is %g\n",valueExpTree(t));
       } else {
+
+
+
         printf("this is not a numerical expression\n");
       }
     } else {

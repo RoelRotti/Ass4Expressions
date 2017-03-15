@@ -7,9 +7,11 @@
 #include <assert.h> /* assert */
 #include "scanner.h"
 #include "recognizeExp.h"
+#include "evalExp.h" /* Evaluate Expressions */
 #include "infixExp.h"
 
 int main(int argc, char *argv[]) {
-  infixExpTrees();
-  return 0;
+	infixExpTrees();
+	/* evaluateExpressions(); */
+  	return 0;
 }
