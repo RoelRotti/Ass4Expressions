@@ -184,7 +184,7 @@ int treePrefixExpression(List *lp, ExpTree *tp) {
  */
 
 
-/* The function treeInfixExpression tries to build a tree from the tokens in the token list
+/* The function treeInfixExpression tries to build a tree from the tokens in the tojken list
  *
  * <expression>   ::= <term> { ’+’ <term> | ’–’ <term> } 
  *
@@ -223,6 +223,7 @@ int treeInfixTerm(List *lp, ExpTree *tp){
   ExpTree tL, tR;
   char c;
 
+  /* checks for factor at beginning term */
   if (! treeInfixFactor(lp, tp)){
     return 0;
   }
@@ -247,6 +248,7 @@ int treeInfixExpression(List *lp, ExpTree *tp){
   ExpTree tL, tR;
   char c;
 
+  /* checks for term at beginning expression */
   if (! treeInfixTerm(lp, tp)){
     return 0;
   }
@@ -343,6 +345,50 @@ ExpTree simplify(ExpTree *tp){
   /* Determine what is going to happen with all the cases in the reader.  */
   /* Build the new tree using the correct nodes. */
 
+  /* Base case: the node has no children */
+  if(simplified == NULL){
+    return simplified;
+  }
+
+  (simplified->left) = simplify(simplified->left);
+  (simplified->right) = simplify(simplified->right);
+
+  switch(Symbol) {
+    case '*':
+    /* if its times zero, just return the 0 */
+        if(tL == 0){
+          return simplified->left;
+        } 
+        if(tR == 0) {
+          return simplified->right;
+        }
+    /* if its times one, just return E */
+        if(tL == 1){
+          return simplified->right;
+        } 
+        if(tR == 1) {
+          return simplified->left;
+        }
+    case '+':
+    /* if its E + 0, return E */
+        if(tL == 0){
+          return simplified->right;
+        } 
+        if(tR == 0) {
+          return simplified->left;
+        }
+    case '-':
+    /* if its E - 0, return E */
+        if(tR == 0){
+          return simplified->left;
+        }
+    case '/':
+    /* if its E / 1, return E */
+        if(tR == 1){
+          return simplified->left;
+        }
+
+  }
 
   /* return the correct tree.  */
 
@@ -351,6 +397,30 @@ ExpTree simplify(ExpTree *tp){
   return simplified;
 }
 
+/* Define a function differentiate that, given an expression E and an identifier x, determ-
+ines the expression tree of the derivative dE/dx. Use the function simplify. For the computation of the derivative 
+f' = df /dx of a function f the following rules apply:
+
+f'       = 0              provided x does not occur in f
+
+f'       = 1              if f(x) = x
+
+(f + g)' = f' + g'
+
+(f − g)' = f' − g'
+
+(f ∗ g)' = f' ∗ g + f ∗ g'
+
+(f /g)'  = (f' ∗ g − f ∗ g')/(g ∗ g)
+
+Observe that, in the case of multiplication and division, both the original function and
+its derivative are involved. As a consequence, you will need a C function to make a
+copy of an expression tree. 
+*/
+
+differentiate(){
+
+}
 
 /* the function prefExpressionExpTrees performs a dialogue with the user and tries
  * to recognize the input as a prefix expression. When it is a numerical prefix 
