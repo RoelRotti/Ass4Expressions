@@ -5,5 +5,7 @@
 
 int valueExpression(List *lp, double *wp);
 void evaluateExpressions();
+int valueTerm();
+int valueFactor();
 
 #endif

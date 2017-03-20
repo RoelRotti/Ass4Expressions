@@ -23,5 +23,6 @@ int isNumerical(ExpTree tr);
 double valueExpTree(ExpTree tr);
 void printExpTreeInfix(ExpTree tr);
 void infixExpTrees();
+int treeInfixExpression(List *lp, ExpTree *tp);
 
 #endif
